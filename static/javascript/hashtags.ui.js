@@ -35,11 +35,14 @@ $.uce.Hashtags.prototype = {
         userCanDelete: false,
         videotagcache: $('#videoticker'),
         lang: "any",
+        filters: $('#filters'),
         currentFilter: {
             "name": "all",
             "type": "any",
             "language": "any"
-        }
+        },
+        //top_hashtags: $('#hashtags .hashtags-list.hashtags-list-pop'),
+        hashtags_list: $('#hashtags .hashtags-list')
     },
 
     /*
@@ -59,13 +62,20 @@ $.uce.Hashtags.prototype = {
      * UI initialize
      */
     _create: function() {
+        var youpi = "youpi";
+        var link = $('<a>')
+            .attr("href", "#")
+            .append(youpi);
+        var item = $('<li>')
+            .append(link);
+        item.appendTo(this.options.hashtags_list);
         // filters a current or default "all" message channel
         if (this.options.currentFilter !== undefined) {
-            this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
+            this.options.filters.data('filters').filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
         } else {
-            this.filterMessages('all', "text", this.options.lang);
+            this.options.filters.data('filters').filterMessages('all', "text", this.options.lang);
         }
-        //this._prependReset();
+        this._prependReset();
     },
 
     /**
@@ -93,7 +103,7 @@ $.uce.Hashtags.prototype = {
      * keeps a filter valid
      */
     _handleDispatchRefresh: function(event) {
-        this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
+        this.options.filters.data('filters').filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
     },
 
     /*
@@ -119,9 +129,6 @@ $.uce.Hashtags.prototype = {
         this.addSelector(event.metadata.hashtag, 'hashtag', event.metadata.lang);
     },
 
-    /*
-     * OBSOLETE
-     */
     _prependReset: function() {
         /*if($(".ui-hashtags-reset").length===0) {
             this.element.prepend($('<button class="ui-hashtags-reset" title="Reset filtering">RESET</button>').hide()); 
@@ -130,7 +137,7 @@ $.uce.Hashtags.prototype = {
                     icons: {primary: "ui-icon-refresh"},
                     text: true
                 }).click(function(e) {
-                    that.filterMessages("all", "text", that.options.lang);
+                    that.options.filters.data('filters').filterMessages("all", "text", that.options.lang);
                     that.options.currentFilter = {
                         name: "all",
                         type: "text",
@@ -142,9 +149,6 @@ $.uce.Hashtags.prototype = {
         }*/
     },  
 
-    /*
-     * Returns the unique hashtag button ID
-     */
     getSelectorId: function(name,type,language) {
         var id = name + type +  language;
         return id.replace(/\#|\./,"");
@@ -161,19 +165,21 @@ $.uce.Hashtags.prototype = {
             return;
         }
         var that = this;
-        var text = $('<a>')
+        var link = $('<a>')
+            .attr("href", "#")
+            .append(name);
+        var item = $('<li>')
             .attr('id', id)
-			.data("count", 1)
-            .attr('title', name)
-            .addClass("ui-hashtags-selector")
-            //.button({'text': true, 'label': name})
+            .append(link)
+            .data("count", 1);
+            /*.addClass("ui-hashtags-selector")
             .click(function() {
                 $(".ui-hashtags-selector").removeClass('ui-state-active');
                 $(this).addClass('ui-state-active');
                 that.filterMessages(name, type, language);
                 $(".ui-hashtags-reset").show();
-            })
-            .appendTo(this.element);
+            })*/
+        item.appendTo(this.options.hashtags_list);
     },
 
     _decrementSelector: function(name, type, language) {
@@ -187,44 +193,13 @@ $.uce.Hashtags.prototype = {
             }
             return;
         }
-        if($('.ui-hashtags-selector').length===0) {
+        /*if($('.ui-hashtags-selector').length===0) {
             $(".ui-hashtags-reset").hide();
         } else {
             $(".ui-hashtags-reset").show();
-        }
+        }*/
     },
 
-    filterMessages: function(name, type, language) {
-        this.options.currentFilter = {
-            'name': name,
-            'type': type,
-            'language': language
-        };
-        if (name == "all") {
-            var that = this;
-            $('.ui-videotag-message').each(function(elt){
-                if( that.options.videotagcache.data($(this).attr('evtid')) !== undefined) {
-                    that.showMessage(this);
-                }
-            });
-            return;
-        }
-        switch (type) {
-            case 'hashtag':
-                this.filterHashtag(name);
-                break;
-            case 'text':
-                break;
-            case 'useruid':
-                this.filterUserUid(name);
-                break;
-            case 'id':
-                this.filterId(name);
-                break;
-            default:
-                break;
-        }
-    },
     _sortHashtags: function() {
         var bt = this.element.find(".ui-hashtags-selector");
         var newbt = bt.sort(function(a, b){
@@ -244,62 +219,13 @@ $.uce.Hashtags.prototype = {
             this.element.empty().append(newbt);
         }
     },
-    filterId: function(query) {
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            if( data.id == query ) {
-                that.showMessage(this);
-            } else {
-                that.hideMessage(this);
-            }
-        });
-    },
     
-    filterUserUid: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            if( data.from == query ) {
-                that.showMessage(this);
-            } else {
-                that.hideMessage(this);
-            }
-        });
-    },
-
-    filterHashtag: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            that.hideMessage(this);
-            if (data===undefined || data === null) {
-                return;
-            }
-            if(data.metadata && data.metadata.hashtag) {
-                if( _.include(data.metadata.hashtag, query) ) {
-                    that.showMessage(this);
-                }
-            }
-        });
-    },
-
-    showMessage: function(elt) {
-        $(elt).removeClass('ui-videotag-filtered');
-        $(elt).show(); 
-    },
-
-    hideMessage: function(elt) {
-        $(elt).hide();
-        $(elt).addClass('ui-videotag-filtered');
-    },
- 
     clear: function() {
-        this.element.empty();
+        this.options.hashtags_list.empty();
     },
 
     destroy: function() {
-        this.element.find('*').remove();
+        this.options.hashtags_list.find('*').remove();
         $.Widget.prototype.destroy.apply(this, arguments); // default destroy
     }
 
