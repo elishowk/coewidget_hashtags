@@ -42,7 +42,8 @@ $.uce.Hashtags.prototype = {
             "language": "any"
         },
         //top_hashtags: $('#hashtags .hashtags-list.hashtags-list-pop'),
-        hashtags_list: $('#hashtags .hashtags-list')
+        hashtags_list: $('#hashtags .hashtags-list'),
+        selected_hashtag_list : $(".selected-hashtags-list")
     },
 
     /*
@@ -62,20 +63,12 @@ $.uce.Hashtags.prototype = {
      * UI initialize
      */
     _create: function() {
-        var youpi = "youpi";
-        var link = $('<a>')
-            .attr("href", "#")
-            .append(youpi);
-        var item = $('<li>')
-            .append(link);
-        item.appendTo(this.options.hashtags_list);
         // filters a current or default "all" message channel
         if (this.options.currentFilter !== undefined) {
             this.options.filters.data('filters').filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
         } else {
             this.options.filters.data('filters').filterMessages('all', "text", this.options.lang);
         }
-        this._prependReset();
     },
 
     /**
@@ -129,24 +122,16 @@ $.uce.Hashtags.prototype = {
         this.addSelector(event.metadata.hashtag, 'hashtag', event.metadata.lang);
     },
 
-    _prependReset: function() {
-        /*if($(".ui-hashtags-reset").length===0) {
-            this.element.prepend($('<button class="ui-hashtags-reset" title="Reset filtering">RESET</button>').hide()); 
-            var that = this;
-            $('.ui-hashtags-reset').button({
-                    icons: {primary: "ui-icon-refresh"},
-                    text: true
-                }).click(function(e) {
-                    that.options.filters.data('filters').filterMessages("all", "text", that.options.lang);
-                    that.options.currentFilter = {
-                        name: "all",
-                        type: "text",
-                        language: that.options.lang
-                    };
-                    $(".ui-hashtags-selector").removeClass('ui-state-active');
-                    $(".ui-hashtags-reset").hide();
-            }); 
-        }*/
+    _resetTicker: function() {
+        var that = this;
+        that.options.selected_hashtag_list.find("*").remove();
+        that.options.hashtags_list.find(".active").removeClass("active");
+        that.options.filters.data('filters').filterMessages("all", "text", that.options.lang);
+        that.options.currentFilter = {
+            name: "all",
+            type: "text",
+            language: that.options.lang
+        };
     },  
 
     getSelectorId: function(name,type,language) {
@@ -171,14 +156,35 @@ $.uce.Hashtags.prototype = {
         var item = $('<li>')
             .attr('id', id)
             .append(link)
-            .data("count", 1);
-            /*.addClass("ui-hashtags-selector")
-            .click(function() {
-                $(".ui-hashtags-selector").removeClass('ui-state-active');
-                $(this).addClass('ui-state-active');
-                that.filterMessages(name, type, language);
-                $(".ui-hashtags-reset").show();
-            })*/
+            .data("count", 1)
+            .click(function(evt) {
+                evt.preventDefault();
+                if(item.find('a').hasClass('active')){
+                    that._resetTicker();
+                }
+                else {
+                    if(that.options.selected_hashtag_list.find("li a").text()!==""){
+                        that._resetTicker();
+                    }
+                    that.options.filters.data('filters').filterMessages(name, type, language);
+                    item.find('a').addClass('active');
+                    item.clone().appendTo(that.options.selected_hashtag_list).addClass('clone').click(function(evt) {
+                        evt.preventDefault();
+                        that._resetTicker();
+                    });
+					
+					var $nav   = $('#player-aside-nav'),
+						$links = $nav.find('a'),
+						$tabs  = $('div.player-aside-box-tab'),
+						box  = "videoticker-comments";
+							
+					$links.removeClass('active');
+					$links.filter("[data-nav='"+box+"']").addClass('active');
+					
+					$tabs.addClass('hide');
+					$('div.'+box).removeClass('hide');
+                }
+            });
         item.appendTo(this.options.hashtags_list);
     },
 

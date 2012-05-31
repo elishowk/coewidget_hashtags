@@ -91,7 +91,6 @@ $.uce.Filters.prototype = {
         if (name == "all") {
             var that = this;
             $('.ui-videotag-message').each(function(elt){
-				alert('yo');
                 if( that.options.videotagcache.data($(this).attr('evtid')) !== undefined) {
                     that.showMessage(this);
                 }
