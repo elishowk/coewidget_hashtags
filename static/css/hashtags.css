@@ -1,0 +1,58 @@
+	/* HASHTAGS
+	------------------------- */
+
+
+.main-title-hashtags:before {
+	background:url(../images/artpack-player.png) no-repeat -100px -45px;
+	content:'';
+	height:24px;
+	float:left;
+	margin-right:7px;
+	position:relative;
+	top:2px;
+	width:30px;
+}
+
+.sub-title-hash-pop:before {
+	background:url(../images/artpack-player.png) no-repeat -80px -42px;
+}
+	
+.hashtags-list {
+	list-style:none;
+	margin-bottom:15px;
+	overflow:hidden;
+}
+
+.hashtags-list-pop {
+	border-bottom:1px solid #272730;
+	padding-bottom:15px;
+}
+
+.hashtags-list li {
+	float:left;
+	height:23px;
+	margin-bottom:5px;
+	width:33%;
+}
+
+.hashtags-list a{
+	border:1px solid #464647;
+	display:inline-block;
+	padding:3px 5px;
+}
+
+.hashtags-list a:hover,
+.hashtags-list a.active {
+	background-color:#616161;
+
+    background-image: linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -o-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -moz-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -ms-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+	
+	border:1px solid #36363a;
+	border-radius:3px;
+	color:#fff;
+	
+}
