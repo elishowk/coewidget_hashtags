@@ -147,20 +147,24 @@ $.uce.Hashtags.prototype = {
             .data("count", 1)
             .click(function(evt) {
                 evt.preventDefault();
+				// on vérifie si l'item n'est pas actif -> dans ce cas on le 'désactive'
                 if(item.find('a').hasClass('active')){
                     that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                 }
+				// sinon on l'ajoute
                 else {
-                    if(that.options.selected_list.find("li a").text()!==""){
+					/* Fonction de filtrage simple -> on vire tout filtrage précédent */
+                    if(that.options.selected_list.parent().find("li a").hasClass('active')){
                         that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                     }
                     that.options.filters.data('filters').filterMessages(name, type, language);
                     $(this).find('a').addClass('active');
+					// on créé un clone dans la zone de filtres
                     $(this).clone().appendTo(that.options.selected_list).addClass('clone').click(function(evt) {
                         evt.preventDefault();
                         that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                     });
-					
+					// on change d'onglet
 					var $nav   = $('#player-aside-nav'),
 						$links = $nav.find('a'),
 						$tabs  = $('div.player-aside-box-tab'),

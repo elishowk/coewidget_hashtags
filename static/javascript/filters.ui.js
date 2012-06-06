@@ -84,7 +84,7 @@ $.uce.Filters.prototype = {
 	
 	_resetTicker: function(list, selected_list) {
 		var that = this;
-		selected_list.find("*").remove();
+		selected_list.parent().find("li").remove();
 		list.find(".active").removeClass("active");
 		that.filterMessages("all", "text", that.options.lang);
 		that.options.currentFilter = {
