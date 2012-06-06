@@ -81,6 +81,18 @@ $.uce.Filters.prototype = {
     _handleDispatchRefresh: function(event) {
         this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
     },
+	
+	_resetTicker: function(list, selected_list) {
+		var that = this;
+		selected_list.find("*").remove();
+		list.find(".active").removeClass("active");
+		that.filterMessages("all", "text", that.options.lang);
+		that.options.currentFilter = {
+			name: "all",
+			type: "text",
+			language: that.options.lang
+		};
+    },
 
     filterMessages: function(name, type, language) {
         this.options.currentFilter = {

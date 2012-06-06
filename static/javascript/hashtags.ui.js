@@ -43,7 +43,7 @@ $.uce.Hashtags.prototype = {
         },
         //top_hashtags: $('#hashtags .hashtags-list.hashtags-list-pop'),
         hashtags_list: $('#hashtags .hashtags-list'),
-        selected_hashtag_list : $(".selected-hashtags-list")
+        selected_list : $(".selected-hashtags-list")
     },
 
     /*
@@ -122,18 +122,6 @@ $.uce.Hashtags.prototype = {
         this.addSelector(event.metadata.hashtag, 'hashtag', event.metadata.lang);
     },
 
-    _resetTicker: function() {
-        var that = this;
-        that.options.selected_hashtag_list.find("*").remove();
-        that.options.hashtags_list.find(".active").removeClass("active");
-        that.options.filters.data('filters').filterMessages("all", "text", that.options.lang);
-        that.options.currentFilter = {
-            name: "all",
-            type: "text",
-            language: that.options.lang
-        };
-    },  
-
     getSelectorId: function(name,type,language) {
         var id = name + type +  language;
         return id.replace(/\#|\./,"");
@@ -160,17 +148,17 @@ $.uce.Hashtags.prototype = {
             .click(function(evt) {
                 evt.preventDefault();
                 if(item.find('a').hasClass('active')){
-                    that._resetTicker();
+                    that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                 }
                 else {
-                    if(that.options.selected_hashtag_list.find("li a").text()!==""){
-                        that._resetTicker();
+                    if(that.options.selected_list.find("li a").text()!==""){
+                        that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                     }
                     that.options.filters.data('filters').filterMessages(name, type, language);
-                    item.find('a').addClass('active');
-                    item.clone().appendTo(that.options.selected_hashtag_list).addClass('clone').click(function(evt) {
+                    $(this).find('a').addClass('active');
+                    $(this).clone().appendTo(that.options.selected_list).addClass('clone').click(function(evt) {
                         evt.preventDefault();
-                        that._resetTicker();
+                        that.options.filters.data('filters')._resetTicker(that.options.hashtags_list , that.options.selected_list);
                     });
 					
 					var $nav   = $('#player-aside-nav'),
