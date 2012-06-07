@@ -37,7 +37,9 @@ $.uce.Filters.prototype = {
             "name": "all",
             "type": "any",
             "language": "any"
-        }
+        },
+        hashtags_selected: [],
+        users_selected: []
     },
 
     /*
@@ -81,52 +83,124 @@ $.uce.Filters.prototype = {
     _handleDispatchRefresh: function(event) {
         this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
     },
-	
-	_resetTicker: function(list, selected_list) {
-		var that = this;
-		selected_list.parent().find("li").remove();
-		list.find(".active").removeClass("active");
-		that.filterMessages("all", "text", that.options.lang);
-		that.options.currentFilter = {
-			name: "all",
-			type: "text",
-			language: that.options.lang
-		};
-    },
 
-    filterMessages: function(name, type, language) {
-        this.options.currentFilter = {
-            'name': name,
-            'type': type,
-            'language': language
+    _addItem: function(list, item) {
+        list.push(item);
+        return list;
+    },
+    
+    _removeItem: function(list, item) {
+        return list = jQuery.grep(list, function(value) {
+          return value != item;
+        });
+    },
+    
+    _refreshTicker: function(name, type, language, list, selected_list) {
+        var that = this;
+        if (type==="hashtag"){
+            list.find("#"+name+"hashtagany a").removeClass("active");
+            selected_list.find("#"+name+"hashtagany").remove();
+        }
+        else if (type==="useruid"){
+            list.find("#"+name+" a").removeClass("active");
+            selected_list.find("#"+name).remove();
+        }
+        that.filterMessagesAdvanced(false, name, type, language);
+    },
+    
+    _resetTicker: function(list, selected_list) {
+        var that = this;
+        selected_list.parent().find("li").remove();
+        list.find(".active").removeClass("active");
+        that.filterMessages("all", "text", that.options.lang);
+        that.options.currentFilter = {
+            name: "all",
+            type: "text",
+            language: that.options.lang
         };
-        if (name == "all") {
-            var that = this;
-            $('.ui-videotag-message').each(function(elt){
-                if( that.options.videotagcache.data($(this).attr('evtid')) !== undefined) {
-                    that.showMessage(this);
-                }
-            });
-            return;
+    },
+    
+    filterMessagesAdvanced: function(added, name, type, language) {
+        // On trie suivant le type pour supprimer ou ajouter l'user/hashtag
+        if (type === 'hashtag'){
+            if (added) {
+                this.options.hashtags_selected = this._addItem(this.options.hashtags_selected, name)
+            }
+            else {
+                this.options.hashtags_selected = this._removeItem(this.options.hashtags_selected, name)
+            }
         }
-        switch (type) {
-            case 'hashtag':
-                this.filterHashtag(name);
-                break;
-            case 'text':
-                break;
-            case 'useruid':
-                this.filterUserUid(name);
-                break;
-            case 'id':
-                this.filterId(name);
-                break;
-            default:
-                break;
+        else if (type === 'useruid'){
+            if (added) {
+                this.options.users_selected = this._addItem(this.options.users_selected, name)
+            }
+            else {
+                this.options.users_selected = this._removeItem(this.options.users_selected, name)
+            }
         }
+        this.filterMessages();
     },
 
-    filterId: function(query) {
+    filterMessages: function() {
+        var that = this;
+        // si les tableaux sont nuls -> tout les messages sont sélectionnés
+        if ((that.options.hashtags_selected.length===0) && (that.options.users_selected.length===0)) {
+            $('.ui-videotag-message').each(function(elt){
+                $(this).addClass('ui-videotag-selected');
+            });
+        }
+        else {
+            // on supprime toutes les classes 'ui-videotag-selected'.
+            $('.ui-videotag-message').each(function(elt){
+                $(this).removeClass('ui-videotag-selected');
+            });
+            // on parcourt le tableaux des hashtags
+            for (i=0;i<this.options.hashtags_selected.length;i++){
+                this.filterHashtag(that.options.hashtags_selected[i]);
+            }
+            // on parcourt le tableaux des users
+            for (i=0;i<this.options.users_selected.length;i++){
+                this.filterUserUid(that.options.users_selected[i]);
+            } 
+        }
+        // on cache tout les messages qui ne sont pas sélectionnés
+        $('.ui-videotag-message').each(function(elt){
+            if($(this).hasClass('ui-videotag-selected')){
+                $(this).show();
+            }
+            else {
+                $(this).hide();
+            }
+        });
+    },
+
+    filterUserUid: function(query) { 
+        var that = this;
+        $('.ui-videotag-message').each(function(elt){
+            var data = that.options.videotagcache.data($(this).attr('evtid'));
+            if( data.from == query ) {
+                $(this).addClass('ui-videotag-selected');
+            } 
+        });
+    },
+
+    filterHashtag: function(query) { 
+        var that = this;
+        $('.ui-videotag-message').each(function(elt){
+            var data = that.options.videotagcache.data($(this).attr('evtid'));
+            if (data===undefined || data === null) {
+                return;
+            }
+            if(data.metadata && data.metadata.hashtag) {
+                if( _.include(data.metadata.hashtag, query) ) {
+                    $(this).addClass('ui-videotag-selected');
+                }
+            }
+        });
+    },
+    
+    
+    /*filterId: function(query) {
         var that = this;
         $('.ui-videotag-message').each(function(elt){
             var data = that.options.videotagcache.data($(this).attr('evtid'));
@@ -136,45 +210,17 @@ $.uce.Filters.prototype = {
                 that.hideMessage(this);
             }
         });
-    },
-    
-    filterUserUid: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            if( data.from == query ) {
-                that.showMessage(this);
-            } else {
-                that.hideMessage(this);
-            }
-        });
-    },
+    },*/
 
-    filterHashtag: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            that.hideMessage(this);
-            if (data===undefined || data === null) {
-                return;
-            }
-            if(data.metadata && data.metadata.hashtag) {
-                if( _.include(data.metadata.hashtag, query) ) {
-                    that.showMessage(this);
-                }
-            }
-        });
-    },
-
-    showMessage: function(elt) {
-        $(elt).removeClass('ui-videotag-filtered');
+    /*showMessage: function(elt) {
+        $(elt).addClass('ui-videotag-filtered');
         $(elt).show(); 
     },
 
     hideMessage: function(elt) {
         $(elt).hide();
-        $(elt).addClass('ui-videotag-filtered');
-    },
+        $(elt).removeClass('ui-videotag-filtered');
+    },*/
  
     clear: function() {
         this.element.empty();
