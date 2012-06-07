@@ -56,3 +56,49 @@
 	color:#fff;
 	
 }
+
+	/* SELECTED-LIST
+	------------------------- */
+	
+.selected-list a {
+	border:1px solid #464647;
+	display:inline-block;
+	padding:3px 5px;
+}
+
+.selected-list a {
+	background-color:#616161;
+
+    background-image: linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -o-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -moz-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+    background-image: -ms-linear-gradient(bottom, rgba(0,0,0,.1) 10%, rgba(255,255,255,.1) 100%);
+	
+	border:1px solid #212220;
+	border-radius:3px;
+	color:#0f0f0f;
+	line-height:16px;
+	text-shadow:1px 1px 1px rgba(255, 255, 255, .5);
+}
+
+.selected-list a:after {
+	background:url(../images/artpack-player.png) -35px -42px;
+	content:'';
+	float:right;
+	height:16px;
+	margin-left:2px;
+	width:15px;
+}
+
+.selected-list {
+	list-style:none;
+	padding:5px 0 0 5px;
+}
+
+.selected-list li {
+	float:left;
+	margin-bottom:5px;
+	margin-right:5px;
+}
+
