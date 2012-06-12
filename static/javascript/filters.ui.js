@@ -83,6 +83,16 @@ $.uce.Filters.prototype = {
     _handleDispatchRefresh: function(event) {
         this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
     },
+	
+	_hideFilterlist: function() {
+        $(".video-comments-filters").hide();
+		$("#video-comments.video-comments-w-filters").removeClass("video-comments-w-filters-shown");
+    },
+	
+	_showFilterlist: function() {
+        $(".video-comments-filters").show();
+		$("#video-comments.video-comments-w-filters").addClass("video-comments-w-filters-shown");
+    },
 
     _addItem: function(list, item) {
         list.push(item);
@@ -106,6 +116,9 @@ $.uce.Filters.prototype = {
             selected_list.find("#"+name).remove();
         }
         that.filterMessagesAdvanced(false, name, type, language);
+		if(selected_list.parent().find('li a').text() === ""){
+			that._hideFilterlist();
+		}
     },
     
     _resetTicker: function(list, selected_list) {
