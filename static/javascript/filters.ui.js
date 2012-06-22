@@ -33,11 +33,6 @@ $.uce.Filters.prototype = {
         ucemeeting: null,
         uceclient: null,
         videotagcache: $('#videoticker'),
-        currentFilter: {
-            "name": "all",
-            "type": "any",
-            "language": "any"
-        },
         hashtags_selected: [],
         users_selected: []
     },
@@ -52,7 +47,6 @@ $.uce.Filters.prototype = {
      * UI initialize
      */
     _create: function() {
-
     },
 
     /**
@@ -64,15 +58,6 @@ $.uce.Filters.prototype = {
      * TODO UCEngine Events callbacks
     */
     _handleDeleteTweet: function(event) {
-        /*var parent = $('#'+event.metadata.parent);
-        if (parent.length > 0) {
-            parent.remove();
-        } else {
-            // delete event arrived before creattion event, lets create a temporary element
-            this.messages.append(
-                $('<div>').attr({'id': event.metadata.parent}).addClass('ui-hashtags-tweet').hide()
-            );
-        }*/
     },
    
     /*
@@ -80,7 +65,7 @@ $.uce.Filters.prototype = {
      * keeps a filter valid
      */
     _handleDispatchRefresh: function(event) {
-        this.filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
+        this.filterOneMessage(event.metadata.element);
     },
     
     _hideFilterlist: function() {
@@ -120,18 +105,6 @@ $.uce.Filters.prototype = {
         }
     },
     
-    _resetTicker: function(list, selected_list) {
-        var that = this;
-        selected_list.parent().find("li").remove();
-        list.find(".active").removeClass("active");
-        that.filterMessages("all", "text", that.options.lang);
-        that.options.currentFilter = {
-            name: "all",
-            type: "text",
-            language: that.options.lang
-        };
-    },
-    
     filterMessagesAdvanced: function(added, name, type, language) {
         // On trie suivant le type pour supprimer ou ajouter l'user/hashtag
         if (type === 'hashtag'){
@@ -154,61 +127,56 @@ $.uce.Filters.prototype = {
     },
 
     filterMessages: function() {
-        var that = this;
         // si les tableaux sont nuls -> tout les messages sont sélectionnés
-        if ((that.options.hashtags_selected.length===0) && (that.options.users_selected.length===0)) {
-            $('.ui-videotag-message').each(function(elt){
-                $(this).addClass('ui-videotag-selected');
-            });
+        if ((this.options.hashtags_selected.length===0) && (this.options.users_selected.length===0)) {
+            $('.ui-videotag-message').addClass('ui-videotag-selected').show();
+            return;
         }
-        else {
-            // on supprime toutes les classes 'ui-videotag-selected'.
-            $('.ui-videotag-message').each(function(elt){
-                $(this).removeClass('ui-videotag-selected');
-            });
-            // on parcourt le tableaux des hashtags
-            for (i=0;i<this.options.hashtags_selected.length;i++){
-                this.filterHashtag(that.options.hashtags_selected[i]);
-            }
-            // on parcourt le tableaux des users
-            for (i=0;i<this.options.users_selected.length;i++){
-                this.filterUserUid(that.options.users_selected[i]);
-            } 
-        }
+        var that = this;
         // on cache tout les messages qui ne sont pas sélectionnés
-        $('.ui-videotag-message').each(function(elt){
-            if($(this).hasClass('ui-videotag-selected')){
-                $(this).show();
-            }
-            else {
-                $(this).hide();
-            }
+        $('.ui-videotag-message').each(function(){
+            that.filterOneMessage($(this));
         });
     },
 
-    filterUserUid: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            if( data.from == query ) {
-                $(this).addClass('ui-videotag-selected');
-            } 
-        });
+    /*
+     * Hide or Show a message
+     * 1- on supprime toutes les classes 'ui-videotag-selected'.
+     * 2- on parcourt le tableaux des hashtags
+     * 3- on parcourt le tableaux des users
+    */
+    filterOneMessage: function(jqElt) {
+        jqElt.removeClass('ui-videotag-selected');
+        for (i=0;i<this.options.hashtags_selected.length;i++){
+            this.filterHashtag(this.options.hashtags_selected[i],jqElt);
+        }
+        for (i=0;i<this.options.users_selected.length;i++){
+            this.filterUserUid(this.options.users_selected[i], jqElt);
+        } 
+        if(jqElt.hasClass('ui-videotag-selected')){
+            jqElt.show();
+        } else {
+            jqElt.hide();
+        }
     },
 
-    filterHashtag: function(query) { 
-        var that = this;
-        $('.ui-videotag-message').each(function(elt){
-            var data = that.options.videotagcache.data($(this).attr('evtid'));
-            if (data===undefined || data === null) {
-                return;
+    filterUserUid: function(query, jqElt) { 
+        var data = this.options.videotagcache.data(jqElt.attr('evtid'));
+        if( data.from == query ) {
+            jqElt.addClass('ui-videotag-selected');
+        } 
+    },
+
+    filterHashtag: function(query, jqElt) { 
+        var data = this.options.videotagcache.data(jqElt.attr('evtid'));
+        if (data===undefined || data === null) {
+            return;
+        }
+        if(data.metadata && data.metadata.hashtag) {
+            if( _.include(data.metadata.hashtag, query) ) {
+                jqElt.addClass('ui-videotag-selected');
             }
-            if(data.metadata && data.metadata.hashtag) {
-                if( _.include(data.metadata.hashtag, query) ) {
-                    $(this).addClass('ui-videotag-selected');
-                }
-            }
-        });
+        }
     },
     
  
