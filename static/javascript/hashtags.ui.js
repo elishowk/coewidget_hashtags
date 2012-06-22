@@ -36,11 +36,6 @@ $.uce.Hashtags.prototype = {
         videotagcache: $('#videoticker'),
         lang: "any",
         filters: $('#filters'),
-        currentFilter: {
-            "name": "all",
-            "type": "any",
-            "language": "any"
-        },
         //top_hashtags: $('#hashtags .hashtags-list.hashtags-list-pop'),
         hashtags_list: $('#hashtags .hashtags-list'),
         selected_list : $(".selected-hashtags-list")
@@ -60,14 +55,7 @@ $.uce.Hashtags.prototype = {
     /*
      * UI initialize
      */
-    _create: function() {
-        // filters a current or default "all" message channel
-        if (this.options.currentFilter !== undefined) {
-            this.options.filters.data('filters').filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
-        } else {
-            this.options.filters.data('filters').filterMessages('all', "text", this.options.lang);
-        }
-    },
+    _create: function() {},
 
     /**
      * TODO UCEngine Events callbacks
