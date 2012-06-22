@@ -55,9 +55,7 @@ $.uce.Hashtags.prototype = {
         //"twitter.hashtag.delete"   : "_handleDeleteHashtag",
         //"twitter.hashtag.add": "_handleAddHashtag",
         "message.hashtag.delete"   : "_handleDeleteHashtag",
-        "message.hashtag.add": "_handleAddHashtag",
-        "videotag.message.dispatch" : "_handleDispatchRefresh"
-
+        "message.hashtag.add": "_handleAddHashtag"
     },
     /*
      * UI initialize
@@ -91,14 +89,6 @@ $.uce.Hashtags.prototype = {
         }*/
     },
    
-    /*
-     * Handles newly pushed message's hashtags
-     * keeps a filter valid
-     */
-    _handleDispatchRefresh: function(event) {
-        this.options.filters.data('filters').filterMessages(this.options.currentFilter.name, this.options.currentFilter.type, this.options.currentFilter.language);
-    },
-
     /*
      * decrements a hashtag selector
      */
