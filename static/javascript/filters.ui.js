@@ -41,7 +41,7 @@ $.uce.Filters.prototype = {
      * UCEngine events listening
      */
     meetingsEvents: {
-        "videotag.message.dispatch" : "_handleDispatchRefresh"
+        // TOO SLOW "videotag.message.postdispatch" : "_handleNewMessageToFilter"
     },
     /*
      * UI initialize
@@ -64,8 +64,9 @@ $.uce.Filters.prototype = {
      * Handles newly pushed message's hashtags
      * keeps a filter valid
      */
-    _handleDispatchRefresh: function(event) {
-        this.filterOneMessage(event.metadata.element);
+    _handleNewMessageToFilter: function(event) {
+        // TODO without slowing everything on load
+        // this.filterOneMessage(event.metadata.element);
     },
     
     _hideFilterlist: function() {
@@ -147,10 +148,10 @@ $.uce.Filters.prototype = {
     */
     filterOneMessage: function(jqElt) {
         jqElt.removeClass('ui-videotag-selected');
-        for (i=0;i<this.options.hashtags_selected.length;i++){
+        for (var i=0;i<this.options.hashtags_selected.length;i++){
             this.filterHashtag(this.options.hashtags_selected[i],jqElt);
         }
-        for (i=0;i<this.options.users_selected.length;i++){
+        for (var i=0;i<this.options.users_selected.length;i++){
             this.filterUserUid(this.options.users_selected[i], jqElt);
         } 
         if(jqElt.hasClass('ui-videotag-selected')){
