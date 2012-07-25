@@ -161,7 +161,7 @@ $.uce.Hashtags.prototype = {
         var id = this.getSelectorId(name, type, language);
         if($("#"+id).length > 0) {
             var count = $("#"+id).data("count") - 1;
-            if(count > 1) {
+            if(count > 0) {
                 $("#"+id).data("count", count);
             } else { 
                 $("#"+id).remove();
