@@ -58,8 +58,9 @@ $('#player-aside-nav [data-nav="videoticker-hashtags"]').click();
 
 test("Add & Delete Hashtag", function() {
     expect(7);
+    // Initialize
     var id = $("#hashtags").data('hashtags').getSelectorId(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
-    //add
+    // Adding an hashtag
     $("#hashtags").data('hashtags')._handleAddHashtag(MockEvent);
     equal($("#"+id).length > 0, true, "Hashtag added");
     notEqual($("#"+id).find('a').text().length, 0, "Hashtag has text");
@@ -67,7 +68,7 @@ test("Add & Delete Hashtag", function() {
     equal($("#"+id).data("count") === 1, true, "Hashtag counted");
     $("#hashtags").data('hashtags')._handleAddHashtag(MockEvent);
     equal($("#"+id).data("count") === 2, true, "Same hashtag added");
-    //delete
+    // Deleting an hashtag
     $("#hashtags").data('hashtags')._handleDeleteHashtag(MockEvent);
     equal($("#"+id).data("count") > 0, true, "One hashtag successfully suppressed");
     $("#hashtags").data('hashtags')._handleDeleteHashtag(MockEvent);
@@ -76,7 +77,7 @@ test("Add & Delete Hashtag", function() {
 
 test("Click test for Hashtag", function() {
     expect(10);
-	// Hashtag creation
+    // Initialize
     var id = $("#hashtags").data('hashtags').getSelectorId(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
     $("#hashtags").data('hashtags').addSelector(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
     // Filtering
@@ -86,16 +87,16 @@ test("Click test for Hashtag", function() {
     equal($(".clone[id='"+id+"']").length, 1, "Clone of selected user exist");
     notEqual($(".clone[id='"+id+"']").find('a').text().length, 0, "Clone has text");
     equal($(".clone[id='"+id+"']").find('a').text()=== MockEvent.metadata.hashtag, true, "Clone has good text");
-	equal($("#"+id).find('a').hasClass("active"), true, "Hashtag has css 'active'");
+    equal($("#"+id).find('a').hasClass("active"), true, "Hashtag has css 'active'");
     // Unfiltering (clone click)
     $(".clone[id='"+id+"']").trigger('click');    
     notEqual($(".clone[id='"+id+"']").length, 1, "Clone of selected hashtag is well suppressed after click on clone hashtag");
-	notEqual($("#"+id).find('a').hasClass("active"), true, "Hashtag has not css 'active' (after a click on clone hashtag)");
-	// Filtering again
+    notEqual($("#"+id).find('a').hasClass("active"), true, "Hashtag has not css 'active' (after a click on clone hashtag)");
+    // Filtering again
     $("#"+id).trigger('click');
-	// Unfiltering again (hashtag click)
+    // Unfiltering again (hashtag click)
     $("#"+id).trigger('click');
-	notEqual($(".clone[id='"+id+"']").length, 1, "Clone of selected hashtag is well suppressed after click on selected hashtag");
-	notEqual($("#"+id).find('a').hasClass("active"), true, "Hashtag has not css 'active' (after a click on selected hashtag)");
+    notEqual($(".clone[id='"+id+"']").length, 1, "Clone of selected hashtag is well suppressed after click on selected hashtag");
+    notEqual($("#"+id).find('a').hasClass("active"), true, "Hashtag has not css 'active' (after a click on selected hashtag)");
     $("#"+id).remove();
 });
