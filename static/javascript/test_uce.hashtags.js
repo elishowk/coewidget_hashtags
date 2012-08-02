@@ -1,48 +1,17 @@
 module("uce.hashtags", {});
 
-var MockEvent = {
-    datetime: 1338893773158,
-    domain: "localhost",
-    from: "39255051546791297315043819510064",
-    id: "18888504972920958972084000340434",
-    location: "demo5",
-    metadata: {
-        hashtag: "#hashtagtest",
-        lang: "any",
-    },
-    type: "message.hashtag.add"
-};
-
-var MockUser = {
-    auth: "password",
-    domain: "localhost",
-    metadata: {
-        first_name: "Ultra",
-        groups: "participant",
-        id: "101",
-        is_active: "true",
-        is_staff: "false",
-        is_superuser: "false",
-        language: "fr",
-        last_name: "Cool",
-        md5: "c1b1d75b5f12ba49f6ec6228db754984",
-        ucengine_uid: "18888444472920958972084000340434",
-        user_id: "101",
-        username: "QunitUser"
-    },
-    name: "QunitUser",
-    uid: "18888444472920958972084000340434",
-    visible: true
-};
-
-if (Factories===undefined) {
-    var Factories = {};
-}
-
-Factories.addHashtagEvent = function(from) {
+Factories.addHashtagEvent = function(hashtag) {
     return {
-        type: "message.hashtag.add",
-        from: from
+        datetime: Date.now(),
+		domain: "localhost",
+		from: "39255051546791297315043819510064",
+		id: (Date.now()+Math.random()*2000).toFixed(0).toString(),
+		location: "demo5",
+		metadata: {
+			hashtag: "#"+hashtag,
+			lang: "any",
+		},
+		type: "message.hashtag.add"
     };
 }
 
@@ -59,6 +28,8 @@ $('#player-aside-nav [data-nav="videoticker-hashtags"]').click();
 test("Add & Delete Hashtag", function() {
     expect(7);
     // Initialize
+	var hashtag = "Supertest";
+	var MockEvent = Factories.addHashtagEvent(hashtag)
     var id = $("#hashtags").data('hashtags').getSelectorId(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
     // Adding an hashtag
     $("#hashtags").data('hashtags')._handleAddHashtag(MockEvent);
@@ -78,6 +49,8 @@ test("Add & Delete Hashtag", function() {
 test("Click test for Hashtag", function() {
     expect(10);
     // Initialize
+	var hashtag = "Supertest2";
+	var MockEvent = Factories.addHashtagEvent(hashtag)
     var id = $("#hashtags").data('hashtags').getSelectorId(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
     $("#hashtags").data('hashtags').addSelector(MockEvent.metadata.hashtag, "hashtag", MockEvent.metadata.lang);
     // Filtering
