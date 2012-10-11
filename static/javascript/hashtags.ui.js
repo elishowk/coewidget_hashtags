@@ -32,7 +32,6 @@ $.uce.Hashtags.prototype = {
     options: {
         ucemeeting: null,
         uceclient: null,
-        userCanDelete: false,
         videotagcache: $('#videoticker'),
         lang: "any",
         filters: $('#filters'),
